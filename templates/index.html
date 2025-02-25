@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Intrusion Detection</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: black; color: white; font-family: Arial, sans-serif; text-align: center; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid white; }
+        th { background-color: purple; }
+        canvas { max-width: 600px; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>⚡ Real-Time Intrusion Detection System ⚡</h1>
+
+    <div>
+        <h2>Traffic Statistics</h2>
+        <p>Total Packets Captured: <span id="total_packets">0</span></p>
+        <p>Malicious Packets: <span id="malicious_packets">0</span></p>
+    </div>
+
+    <canvas id="trafficChart"></canvas>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Source IP</th>
+                <th>Destination IP</th>
+                <th>Protocol</th>
+                <th>Packet Length</th>
+                <th>Traffic Type</th>
+            </tr>
+        </thead>
+        <tbody id="trafficTable">
+        </tbody>
+    </table>
+
+    <script>
+        var socket = io();
+        var ctx = document.getElementById('trafficChart').getContext('2d');
+        
+        var trafficChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Total Packets", "Malicious Packets"],
+                datasets: [{
+                    label: "Traffic Data",
+                    backgroundColor: ["blue", "red"],
+                    data: [0, 0]
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        socket.on('update_traffic', function(data) {
+            document.getElementById('total_packets').innerText = data.total_packets;
+            document.getElementById('malicious_packets').innerText = data.malicious_packets;
+
+            // Update Chart
+            trafficChart.data.datasets[0].data = [data.total_packets, data.malicious_packets];
+            trafficChart.update();
+
+            // Update Table
+            var table = document.getElementById("trafficTable");
+            var row = table.insertRow(0);
+            row.innerHTML = `<td>${data.source_ip}</td>
+                             <td>${data.destination_ip}</td>
+                             <td>${data.protocol}</td>
+                             <td>${data.packet_length}</td>
+                             <td>${data.traffic_type}</td>`;
+        });
+    </script>
+</body>
+</html>
