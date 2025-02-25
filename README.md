@@ -1,1 +1,2 @@
-# AI Powered IDS
+# AI Powered Intrusion Detection System (IDS)
+
