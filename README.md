@@ -1,1 +1,1 @@
-# AI-Powered-IDS
+# AI Powered IDS
