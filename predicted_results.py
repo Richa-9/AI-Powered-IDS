@@ -3,7 +3,7 @@ import pickle
 import os
 
 # File path for results
-results_file = "predicted_traffic_results.csv"
+results_file = "predicted_traffic.results.csv"
 
 # Reset the results file (clear previous content)
 if os.path.exists(results_file):
@@ -16,11 +16,11 @@ with open("ids_model.pkl", "rb") as file:
     model = pickle.load(file)
 
 # Load new network traffic data
-csv_file = "new_network_traffic.csv"
+csv_file = "new_network.traffic.csv"
 df = pd.read_csv(csv_file)
 
 if df.empty:
-    print("⚠ No new network traffic data found.")
+    print("No new network traffic data found.")
     exit()
 
 # Keep a copy of the original data for reference
@@ -51,15 +51,15 @@ predictions = model.predict(df)
 
 # Add results to the original dataframe
 original_df["Predicted Attack"] = predictions
-original_df["Prediction Result"] = original_df["Predicted Attack"].apply(lambda x: "🚨 Malicious" if x == 1 else "✅ Normal")
+original_df["Prediction Result"] = original_df["Predicted Attack"].apply(lambda x: "Malicious" if x == 1 else "Normal")
 
 # Display results
 for index, row in original_df.iterrows():
     if row["Predicted Attack"] == 1:
-        print(f"🚨 ALERT! Malicious Traffic Detected: {row['Attack Type']}")
+        print(f"ALERT! Malicious Traffic Detected: {row['Attack Type']}")
     else:
-        print(f"✅ Normal Traffic Detected")
+        print(f"Normal Traffic Detected")
 
 # Save results to CSV (append mode after clearing initially)
 original_df.to_csv(results_file, mode="a", index=False, header=False)
-print("✅ Predictions saved to 'predicted_traffic_results.csv'")
+print("Predictions saved to 'predicted_traffic.results.csv'")
