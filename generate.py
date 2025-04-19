@@ -2,24 +2,18 @@ import pandas as pd
 import random
 import numpy as np
 
-# Define possible values for network traffic features
-# ip_addresses = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-# destination_ips = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
 ports = list(range(20, 1024))
 protocols = ["TCP", "UDP", "ICMP"]
 attack_types = ["Normal", "DDoS", "SQL Injection", "Brute Force", "XSS", "Malware"]
 
 # Generate dataset
-num_samples = 5000
+num_samples = 500000
 data = []
 
 for _ in range(num_samples):
 
-    src_ip = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-    dst_ip = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-
-    # src_ip = random.choice(ip_addresses)
-    # dst_ip = random.choice(destination_ips)
+    src_ip = f"{random.randint(10, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
+    dst_ip = f"{random.randint(10, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
     src_port = random.choice(ports)
     dst_port = random.choice(ports)
     protocol = random.choice(protocols)
