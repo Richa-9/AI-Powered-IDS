@@ -1,60 +1,57 @@
 import pandas as pd
 import random
 import numpy as np
-import time
 
 # Define possible values for network traffic features
-ip_addresses = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-destination_ips = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-ports = list(range(1024, 65535))
+ports = list(range(20, 1024))
 protocols = ["TCP", "UDP", "ICMP"]
-attack_types = ["DDoS", "SQL Injection", "Brute Force", "XSS", "Malware"]
+attack_types = ["Normal", "DDoS", "SQL Injection", "Brute Force", "XSS", "Malware"]
 
-# File name for real-time data
-csv_file = "new_network_traffic.csv"
+# Function to generate detailed reason for attack
+def generate_attack_reason(attack_type, packet_size, protocol, src_port, dst_port, duration, src_ip, dst_ip):
+    if attack_type == "DDoS":
+        return f"High-volume traffic ({packet_size} bytes) over {protocol} from {src_ip} targeting {dst_ip} on port {dst_port} within {duration}s indicates flooding behavior."
+    elif attack_type == "SQL Injection":
+        return f"Suspicious request from {src_ip} to {dst_ip}:{dst_port} using {protocol} protocol likely contains SQL payload due to unusual traffic pattern and duration of {duration}s."
+    elif attack_type == "Brute Force":
+        return f"Multiple access attempts detected from {src_ip} to login service on port {dst_port} using {protocol}, with short duration {duration}s and packet size {packet_size} bytes."
+    elif attack_type == "XSS":
+        return f"Injection attempt suspected from {src_ip} over {protocol} with small packet size ({packet_size} bytes), possibly script-laden payload targeting {dst_ip}:{dst_port}."
+    elif attack_type == "Malware":
+        return f"Unusual file behavior from {src_ip} to {dst_ip} via port {dst_port}, protocol {protocol}, size {packet_size} bytes and duration {duration}s suggests malware activity."
+    else:
+        return "N/A"
 
-# Clear file and write headers when script starts
-df = pd.DataFrame(columns=["Source IP", "Destination IP", "Source Port", "Destination Port", "Protocol", 
-                           "Packet Size", "Duration", "Is Attack", "Attack Type", "Anomaly Score"])
-df.to_csv(csv_file, index=False)
+# Generate dataset
+num_samples = 500000
+data = []
 
-print("⚠️ File reset: 'new_network_traffic.csv' cleared and new data will be added.")
+for _ in range(num_samples):
+    src_ip = f"{random.randint(10, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
+    dst_ip = f"{random.randint(10, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
+    src_port = random.choice(ports)
+    dst_port = random.choice(ports)
+    protocol = random.choice(protocols)
+    packet_size = random.randint(50, 1500)
+    duration = round(random.uniform(0.01, 5.0), 2)
+    is_attack = random.choices([0, 1], weights=[0.7, 0.3])[0]
+    attack_type = random.choice(attack_types) if is_attack else "Normal"
+    anomaly_score = round(np.random.normal(0.2 if is_attack else 0.01, 0.05), 2)
+    attack_reason = generate_attack_reason(attack_type, packet_size, protocol, src_port, dst_port, duration, src_ip, dst_ip) if is_attack else "N/A"
+    
+    data.append([
+        src_ip, dst_ip, src_port, dst_port, protocol,
+        packet_size, duration, is_attack, attack_type,
+        anomaly_score, attack_reason
+    ])
 
-# Function to generate real-time network traffic with malicious and normal entries
-def generate_network_traffic():
-    while True:
-        src_ip = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-        dst_ip = f"{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}"
-        
-        src_port = random.choice(ports)
-        dst_port = random.choice(ports)
-        protocol = random.choice(protocols)
-        packet_size = random.randint(50, 1500)
-        duration = round(random.uniform(0.01, 5.0), 2)
-        
-        # 20% chance of attack
-        is_attack = random.choices([0, 1], weights=[0.7, 0.3])[0]  
-        attack_type = random.choice(attack_types) if is_attack else "Normal"
-        anomaly_score = round(np.random.normal(0.3 if is_attack else 0.01, 0.1), 2)  # Higher anomaly score for attacks
+# Create DataFrame
+df = pd.DataFrame(data, columns=[
+    "Source IP", "Destination IP", "Source Port", "Destination Port", "Protocol",
+    "Packet Size", "Duration", "Is Attack", "Attack Type", "Anomaly Score", "Attack Reason"
+])
 
-        # Create a DataFrame entry
-        new_entry = pd.DataFrame([[src_ip, dst_ip, src_port, dst_port, protocol, packet_size, 
-                                   duration, is_attack, attack_type, anomaly_score]],
-                                 columns=["Source IP", "Destination IP", "Source Port", "Destination Port", 
-                                          "Protocol", "Packet Size", "Duration", "Is Attack", 
-                                          "Attack Type", "Anomaly Score"])
-        
-        # Append to CSV
-        new_entry.to_csv(csv_file, mode="a", header=False, index=False)
-        
-        # Print logs with alert for malicious traffic
-        if is_attack:
-            print(f"🚨 ALERT! Malicious traffic detected: {attack_type}\n{new_entry}\n")
-        else:
-            print(f"✅ Normal traffic detected:\n{new_entry}\n")
+# Save dataset to CSV
+df.to_csv("new_network.traffic.csv", index=False)
 
-        # Wait for 5 seconds before generating the next entry
-        time.sleep(5)
-
-# Run the generator
-generate_network_traffic()
+print("IDS dataset generated and saved as 'new_network.traffic.csv'")
