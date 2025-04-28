@@ -8,7 +8,7 @@ import { getFirestore, collection, addDoc } from 'firebase/firestore';
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAItBlwKD0d92-AeTEOu_xzg-YxHMvjbZI",
+    apiKey: "Your API key",
     authDomain: "ai-powered-ids.firebaseapp.com",
     projectId: "ai-powered-ids",
     storageBucket: "ai-powered-ids.firebasestorage.app",
