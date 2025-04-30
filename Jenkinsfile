@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_DIR = "${env.WORKSPACE}"
+        COMPOSE_PROJECT_NAME = "ai_ids"
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Richa-9/AI-Powered-IDS.git'
+                checkout scm
             }
         }
 
@@ -29,14 +29,21 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
+
+        stage('Check Running Services') {
+            steps {
+                sh 'docker ps'
+            }
+        }
     }
 
     post {
-        failure {
-            echo 'Pipeline failed!'
+        always {
+            echo "Cleaning up dangling images (optional)"
+            sh 'docker image prune -f || true'
         }
-        success {
-            echo 'Pipeline completed successfully!'
+        failure {
+            echo "Build failed! Check logs for details."
         }
     }
 }
