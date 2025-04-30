@@ -4,6 +4,7 @@ eventlet.monkey_patch()
 from flask import Flask
 from flask_socketio import SocketIO
 import pandas as pd
+<<<<<<< HEAD
 import os
 from flask_cors import CORS
 from xgboost import XGBClassifier
@@ -22,12 +23,40 @@ csv_folder_path = os.path.join(base_dir, 'CSV')
 # Load model
 model = XGBClassifier()
 model.load_model(os.path.join(base_dir, "ids_model.json"))
+=======
+import pickle
+import os
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all domains
+
+
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+
+# Base directory
+base_dir = os.path.dirname(__file__)
+
+# Set Python folder path correctly (same folder as app.py)
+python_folder_path = base_dir
+
+# Paths to CSV folder
+csv_folder_path = os.path.join(python_folder_path, 'CSV')
+
+# Load trained model
+model_path = os.path.join(python_folder_path, "ids_model.pkl")
+with open(model_path, "rb") as f:
+    model = pickle.load(f)
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
 
 # Load dataset
 dataset_path = os.path.join(csv_folder_path, "new_network_traffic.csv")
 df = pd.read_csv(dataset_path)
 
+<<<<<<< HEAD
 # Data preprocessing
+=======
+# Preprocess function for model input
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
 def preprocess_row(row):
     input_df = pd.DataFrame([row])
     input_df = input_df.drop(columns=["Source IP", "Destination IP", "Attack Type", "Attack Reason"], errors="ignore")
@@ -37,12 +66,23 @@ def preprocess_row(row):
         "Source Port", "Destination Port", "Packet Size", "Duration", "Anomaly Score",
         "Protocol_ICMP", "Protocol_TCP", "Protocol_UDP"
     ]
+<<<<<<< HEAD
     for col in expected_columns:
         if col not in input_df.columns:
             input_df[col] = 0
     return input_df[expected_columns]
 
 # Emit function
+=======
+
+    for col in expected_columns:
+        if col not in input_df.columns:
+            input_df[col] = 0
+
+    return input_df[expected_columns]
+
+# Emit traffic row by row
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
 def emit_traffic():
     for _, row in df.iterrows():
         preprocessed = preprocess_row(row)
@@ -50,12 +90,24 @@ def emit_traffic():
         predicted_label = "Malicious" if prediction == 1 else "Normal"
         actual_label = "Malicious" if row.get("Attack Type") != "Normal" else "Normal"
 
+<<<<<<< HEAD
         reason = (
             "False Negative" if actual_label == "Malicious" and predicted_label == "Normal" else
             "False Positive" if actual_label == "Normal" and predicted_label == "Malicious" else
             "Correct"
         )
 
+=======
+        # Determine reason
+        if actual_label == "Malicious" and predicted_label == "Normal":
+            reason = "False Negative"
+        elif actual_label == "Normal" and predicted_label == "Malicious":
+            reason = "False Positive"
+        else:
+            reason = "Correct"
+
+        # Prepare data to emit
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
         data = {
             "Source IP": row.get("Source IP", ""),
             "Destination IP": row.get("Destination IP", ""),
@@ -72,21 +124,35 @@ def emit_traffic():
         }
 
         socketio.emit("new_traffic", data)
+<<<<<<< HEAD
         socketio.sleep(2)  # Yield to eventlet
 
 # Route for API testing
+=======
+        socketio.sleep(2)  # Non-blocking sleep for eventlet
+
+
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
 @app.route('/dashboard')
 def index():
     return "React app is running at http://localhost:3000"
 
+<<<<<<< HEAD
 # WebSocket connection
+=======
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
 @socketio.on("connect")
 def handle_connect():
     socketio.start_background_task(emit_traffic)
 
+<<<<<<< HEAD
 # Run using eventlet
 if __name__ == '__main__':
     import eventlet
     import eventlet.wsgi
     eventlet.wsgi.server(eventlet.listen(('', 5001)), app)
 
+=======
+if __name__ == '__main__':
+    socketio.run(app, port=5001)
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6

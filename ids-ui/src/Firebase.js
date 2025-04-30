@@ -8,7 +8,11 @@ import { getFirestore, collection, addDoc } from 'firebase/firestore';
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
+<<<<<<< HEAD
     apiKey: "AIzaSyAItBlwKD0d92-AeTEOu_xzg-YxHMvjbZI",
+=======
+    apiKey: "Your API key",
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
     authDomain: "ai-powered-ids.firebaseapp.com",
     projectId: "ai-powered-ids",
     storageBucket: "ai-powered-ids.firebasestorage.app",
@@ -24,4 +28,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 export const db = getFirestore(app);
 
+<<<<<<< HEAD
 export { auth };
+=======
+export { auth };
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6

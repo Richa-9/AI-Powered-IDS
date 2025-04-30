@@ -70,4 +70,8 @@ const AdminLogin = () => {
   );
 };
 
+<<<<<<< HEAD
 export default AdminLogin;
+=======
+export default AdminLogin;
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6

@@ -98,4 +98,8 @@ const AdminSignup = () => {
   );
 };
 
+<<<<<<< HEAD
 export default AdminSignup;
+=======
+export default AdminSignup;
+>>>>>>> 08e62031fad3de1b1497fa7463195959a68653b6
