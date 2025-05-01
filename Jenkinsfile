@@ -1,38 +1,27 @@
 pipeline {
     agent any
 
-    environment {
-        COMPOSE_PROJECT_NAME = "ai_ids_project"
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Clone Repository') {
             steps {
-                git url: 'https://github.com/Richa-9/AI-Powered-IDS.git', branch: 'main'
+                git 'https://github.com/Richa-9/AI-Powered-IDS.git'
             }
         }
 
-        stage('Build and Run with Docker Compose') {
+        stage('Build & Run Containers') {
             steps {
-                script {
-                    bat 'docker-compose down' // Clean before build
-                    bat 'docker-compose build'
-                    bat 'docker-compose up -d'
-                }
+                bat 'docker-compose up -d'
             }
         }
 
-        stage('Wait and Test') {
+        stage('Wait for Presentation') {
             steps {
-                script {
-                    echo 'Waiting for services to start...'
-                    sleep 10
-                    // Add any test commands here (like curl or healthcheck)
-                }
+                echo 'App is now running. Open it in your browser at http://localhost:3000 or http://localhost:5000'
+                sleep(time:10, unit:"MINUTES") // You can change this to 5 or more
             }
         }
 
-        stage('Shutdown') {
+        stage('Shutdown App') {
             steps {
                 bat 'docker-compose down'
             }
