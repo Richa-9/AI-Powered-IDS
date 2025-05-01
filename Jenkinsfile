@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     echo 'Waiting for services to start...'
-                    sleep 10
+                    sleep 500
                     // Add any test commands here (like curl or healthcheck)
                 }
             }
