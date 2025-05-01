@@ -151,7 +151,7 @@ const Dashboard = () => {
     <div>
       <canvas id="starCanvas" ref={canvasRef} className="star-canvas" />
 
-      <h1 className="dashboard-title">AI Powered Real-Time Intrusion Detection System</h1>
+      <h1 className="dashboard-title">Real-Time AI Powered Real-Time Intrusion Detection System</h1>
 
       {/* Log Out Button */}
       <button onClick={handleLogout} className="logout-button">Log Out</button>
